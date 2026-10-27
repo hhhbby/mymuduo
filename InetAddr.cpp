@@ -1,13 +1,17 @@
 #include "InetAddr.h"
+#include "Logger.h"
+
 #include <arpa/inet.h>
 #include <strings.h>
+#include <string.h>
 
 InetAddr::InetAddr(uint16_t port, std::string ip)
 {
     bzero(&addr_, sizeof addr_);
     addr_.sin_family = AF_INET;
     addr_.sin_port = htons(port);
-    inet_pton(AF_INET, ip.c_str(), &addr_.sin_addr);
+    if (inet_pton(AF_INET, ip.c_str(), &addr_.sin_addr) != 1)
+        LOG_ERROR("InetAddr-inet_pton failed");
 }
 
 uint16_t InetAddr::toPort()
@@ -18,7 +22,10 @@ uint16_t InetAddr::toPort()
 std::string InetAddr::toIpPort()
 {
     char buf[64]{};
-    snprintf(buf, sizeof buf, "%s:%u", inet_ntoa(addr_.sin_addr), toPort());
+    if (!inet_ntop(AF_INET, &addr_.sin_addr, buf, sizeof buf))
+        LOG_ERROR("InetAddr-inet_ntop failed");
+    int sz = strlen(buf);
+    snprintf(buf + sz, (sizeof buf) - sz, ":%u",toPort());
     return buf;
 }
 
