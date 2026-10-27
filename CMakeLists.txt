@@ -5,6 +5,7 @@ project(mymuduo)
 
 set(SRCLIST 
     TimeStamp.cpp
+    InetAddr.cpp
 )
 
 add_library(mymuduo SHARED ${SRCLIST})
