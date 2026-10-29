@@ -18,6 +18,8 @@ public:
     void enableWriting() { events_ |= kWriteEvent; update(); }
     void disableWriting() { events_ &= !kWriteEvent; update(); }
 
+    bool isNoneEvent() { return events_ == kNoneEvent; }
+
     void handleEvent(TimeStamp receiveTime);
     void handleEventWithGuard(TimeStamp receiveTime);
 
@@ -25,17 +27,24 @@ public:
     void setWriteCallback(eventCallback cb) { writeCallback_ = cb; }
     void setCloseCallback(eventCallback cb) { closeCallback_ = cb; }
     void setErrorCallback(eventCallback cb) { errorCallback_ = cb; }
-    void remote();
+
+    int fd();
+    int events();
+    void setRevents(int revents);
+    int state();
+    void setState(int state);
+    void remove();
 private:
     void update();
-    static const int kNoneEvent;
-    static const int kReadEvent;
-    static const int kWriteEvent;
+    static const int kNoneEvent = 0;
+    static const int kReadEvent = 1;
+    static const int kWriteEvent = 2;
 
     EventLoop* loop_;
     int fd_;
     int events_;
     int revents_;
+    int state_;
     
     bool tied_;
     std::shared_ptr<void> tie_;

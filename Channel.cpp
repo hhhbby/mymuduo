@@ -8,6 +8,7 @@ Channel::Channel(EventLoop* loop, int fd)
     fd_(fd),
     events_(0),
     revents_(0),
+    state_(-1),
     tied_(false)
 {
 }
@@ -45,7 +46,32 @@ void Channel::handleEventWithGuard(TimeStamp receiveTime)
     }    
 }
 
-void Channel::remote()
+int Channel::fd()
+{
+    return fd_;
+}
+
+int Channel::events()
+{
+    return events_;
+}
+
+void Channel::setRevents(int revents)
+{
+    revents_ = revents;
+}
+
+int Channel::state()
+{
+    return state_;
+}
+
+void Channel::setState(int state)
+{
+    state_ = state;
+}
+
+void Channel::remove()
 {
 }
 

@@ -10,7 +10,8 @@ set(SRCLIST
 
     Channel.cpp
     EventLoop.cpp
-    Poller.cpp
+    EpollPoller.cpp
+    DefaultPoller.cpp
 )
 
 add_library(mymuduo SHARED ${SRCLIST})
