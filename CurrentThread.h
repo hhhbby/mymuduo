@@ -1,0 +1,5 @@
+
+namespace CurrentThread
+{
+    int tid();
+}
