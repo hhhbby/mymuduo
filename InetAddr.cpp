@@ -5,6 +5,9 @@
 #include <strings.h>
 #include <string.h>
 
+InetAddr::InetAddr(sockaddr_in addr):addr_(addr)
+{}
+
 InetAddr::InetAddr(uint16_t port, std::string ip)
 {
     bzero(&addr_, sizeof addr_);
@@ -27,6 +30,11 @@ std::string InetAddr::toIpPort()
     int sz = strlen(buf);
     snprintf(buf + sz, (sizeof buf) - sz, ":%u",toPort());
     return buf;
+}
+
+sockaddr_in *InetAddr::addr()
+{
+    return &addr_;
 }
 
 // #include <iostream>

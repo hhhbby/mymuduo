@@ -15,6 +15,11 @@ set(SRCLIST
 
     Thread.cpp
     CurrentThread.cpp
+    EventLoopThread.cpp
+    EventLoopThreadPool.cpp
+
+    Acceptor.cpp
+    TcpServer.cpp
 )
 
 add_library(mymuduo SHARED ${SRCLIST})

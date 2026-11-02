@@ -6,7 +6,8 @@
 class Thread {
 public:
     using ThreadFunc = std::function<void()>;
-    Thread(ThreadFunc, const std::string& = std::string());
+    
+    Thread(ThreadFunc func, const std::string& = std::string());
     ~Thread();
     void start();
     void join();
@@ -19,7 +20,6 @@ private:
     ThreadFunc func_;
     int tid_;
     bool started_;
-    bool joined_;
     std::shared_ptr<std::thread> thread_;
 
     static int numCreated_;
