@@ -18,6 +18,9 @@ set(SRCLIST
     EventLoopThread.cpp
     EventLoopThreadPool.cpp
 
+    TcpConnection.cpp
+    Buffer.cpp
+
     Acceptor.cpp
     TcpServer.cpp
 )

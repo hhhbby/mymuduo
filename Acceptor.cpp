@@ -55,7 +55,7 @@ void Acceptor::handleRead(TimeStamp t)
         LOG_FATAL("new connection coming, but accept failed");
     }
     InetAddr addr(peerAddr);
-    LOG_INFO("new connection from %s at %s",addr.toIpPort(), t.toString());
+    LOG_INFO("new connection from %s at %s",addr.toIpPort().c_str(), t.toString().c_str());
     if (newConnectionCallback_)
     {
         newConnectionCallback_(clientFd, addr);

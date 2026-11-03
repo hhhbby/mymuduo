@@ -11,7 +11,7 @@ EventLoopThread::EventLoopThread()
 {
     if (sem_init(&sem_, 0, 0) == -1)
     {
-        LOG_FATAL("%s:%s sem_init failed", __FILE__, __LINE__);
+        LOG_FATAL("%s:%d sem_init failed", __FILE__, __LINE__);
     }    
 }
 

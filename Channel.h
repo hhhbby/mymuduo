@@ -1,3 +1,5 @@
+#pragma once
+
 #include <memory>
 #include <functional>
 
@@ -17,6 +19,7 @@ public:
     void disableReading() { events_ &= !kReadEvent; update(); }
     void enableWriting() { events_ |= kWriteEvent; update(); }
     void disableWriting() { events_ &= !kWriteEvent; update(); }
+    bool isWriting() { return events_ | kWriteEvent; }
 
     bool isNoneEvent() { return events_ == kNoneEvent; }
 
@@ -27,6 +30,8 @@ public:
     void setWriteCallback(eventCallback cb) { writeCallback_ = cb; }
     void setCloseCallback(eventCallback cb) { closeCallback_ = cb; }
     void setErrorCallback(eventCallback cb) { errorCallback_ = cb; }
+
+    void tie(std::shared_ptr<void> obj);
 
     int fd();
     int events();

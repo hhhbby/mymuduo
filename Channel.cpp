@@ -46,6 +46,12 @@ void Channel::handleEventWithGuard(TimeStamp receiveTime)
     }    
 }
 
+void Channel::tie(std::shared_ptr<void> obj)
+{
+    tie_ = obj;
+    tied_ = true;
+}
+
 int Channel::fd()
 {
     return fd_;
