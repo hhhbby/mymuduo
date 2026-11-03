@@ -19,6 +19,9 @@ public:
     void loop();
     void wakeup();
     void runInLoop(Functor f);
+
+    void updateChannel(Channel* channel);
+    void removeChannel(Channel* channel);
 private:
     void queueInLoop(Functor f);
     void doPendingFunctors();

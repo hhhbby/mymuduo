@@ -1,5 +1,6 @@
 #include "Channel.h"
 #include "TimeStamp.h"
+#include "EventLoop.h"
 
 #include <poll.h>
 
@@ -77,11 +78,14 @@ void Channel::setState(int state)
     state_ = state;
 }
 
+// delete from poller
 void Channel::remove()
 {
+    loop_->removeChannel(this);
 }
 
+// add to poller or update events_ to poller
 void Channel::update()
 {
-
+    loop_->updateChannel(this);
 }

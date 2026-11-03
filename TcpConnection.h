@@ -26,7 +26,9 @@ public:
     // void shutdownWrite();
 
     EventLoop* getLoop() { return loop_; }
-    void connectDesroyed();;
+
+    // called by ~TcpServer and TcpConnection::handleClose
+    void connectDestroyed();;
     
 private:
     void handleRead(TimeStamp receiveTime);

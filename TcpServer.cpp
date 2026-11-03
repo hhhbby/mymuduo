@@ -41,7 +41,7 @@ void TcpServer::removeConnection(const TcpConnectionPtr &conn)
         }
     }
     EventLoop* ioLoop = conn->getLoop();
-    ioLoop->runInLoop(std::bind(&TcpConnection::connectDesroyed, conn));;
+    ioLoop->runInLoop(std::bind(&TcpConnection::connectDestroyed, conn));;
 }
 
 // run in main loop

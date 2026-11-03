@@ -75,12 +75,24 @@ void TcpConnection::connectEstablish()
     connectionCallback_(shared_from_this());
 }
 
-void TcpConnection::connectDesroyed()
+// called in messageCallback, in subLoop thread
+void TcpConnection::shutdown()
+{
+    state_ = kDisConnecting;
+    if (!channel_.isWriting())
+    {
+        ::shutdown(fd_, SHUT_WR);
+    }
+}
+
+void TcpConnection::connectDestroyed()
 {
     // bug
-    state_ = kDisConnected;
-    channel_.disableReading();
-    channel_.disableWriting();
+    if (state_ == kConnected)
+    {
+        state_ = kDisConnected;
+        channel_.disableAll();
+    }
     channel_.remove();
 }
 
@@ -112,8 +124,8 @@ void TcpConnection::handleWrite()
         if (outputBuffer_.readableBytes() == 0)
         {
             channel_.disableWriting();
-            // if (state_ == kDisConnecting)
-            //     shutdown();
+            if (state_ == kDisConnecting)
+                shutdown();
         }
     } else {
         LOG_FATAL("TcpConnection::handleWrite failed");
@@ -128,8 +140,7 @@ void TcpConnection::handleError()
 void TcpConnection::handleClose()
 {
     state_ = kDisConnected;
-    channel_.disableReading();
-    channel_.disableWriting();
+    channel_.disableAll();
 
     // callback user specified
     connectionCallback_(shared_from_this());
