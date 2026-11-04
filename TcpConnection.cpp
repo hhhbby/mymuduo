@@ -2,10 +2,12 @@
 #include <assert.h>
 #include <errno.h>
 #include <sys/socket.h>
+#include <unistd.h>
 
 #include "TcpConnection.h"
 #include "TimeStamp.h"      // 这里是必需的，因为handleRead中需要，最重要的是TcpConnection::TcpConnection中bind时需要，否则会出错：无法转换
 #include "Logger.h"
+#include "EventLoop.h"
 
 
 sockaddr_in getLocalAddr(int fd)
@@ -37,10 +39,28 @@ TcpConnection::TcpConnection(EventLoop *loop, int fd, InetAddr peerAddr):
 
 TcpConnection::~TcpConnection()
 {
+    ::close(fd_);
 }
 
 void TcpConnection::send(const char *data, size_t len)
 {
+    if (loop_->isInLoopThread())
+        sendInLoop(data, len);
+    else {
+        auto self = shared_from_this();
+        loop_->runInLoop(std::bind(
+            [self](const std::string& msg) {
+                self->sendInLoop(msg.data(), msg.size());
+            }, 
+            std::string(data, len)));
+    }
+}
+
+void TcpConnection::sendInLoop(const char *data, size_t len)
+{
+    loop_->assertInLoopThread();
+    if (state_ != kConnected)
+        return;
     // try write directly
     outputBuffer_.append(data, len);
     if (!channel_.isWriting() && outputBuffer_.readableBytes() == len)
@@ -52,7 +72,7 @@ void TcpConnection::send(const char *data, size_t len)
             {}
         } else {
             if (savedErrno != EAGAIN && savedErrno != EWOULDBLOCK)
-                LOG_FATAL("TcpConnection::send failed");
+                LOG_ERROR("TcpConnection::send failed");
         }
     }
     if (outputBuffer_.readableBytes() > 0)
@@ -78,6 +98,14 @@ void TcpConnection::connectEstablish()
 // called in messageCallback, in subLoop thread
 void TcpConnection::shutdown()
 {
+    loop_->runInLoop(std::bind(&TcpConnection::shutdownInLoop, this));
+}
+
+void TcpConnection::shutdownInLoop()
+{
+    loop_->assertInLoopThread();
+    if (state_ != kConnected)
+        return;
     state_ = kDisConnecting;
     if (!channel_.isWriting())
     {
@@ -87,7 +115,6 @@ void TcpConnection::shutdown()
 
 void TcpConnection::connectDestroyed()
 {
-    // bug
     if (state_ == kConnected)
     {
         state_ = kDisConnected;
@@ -116,6 +143,12 @@ void TcpConnection::handleRead(TimeStamp receiveTime)
 
 void TcpConnection::handleWrite()
 {
+    // POLLIN(close) ＆ POLLOUT, then read return 0
+    if (!channel_.isWriting())
+    {
+        LOG_INFO("connection %s is down, no more writing", peerAddr_.toIpPort().c_str());
+        return;
+    }
     // from outputBuffer_ to send
     int savedErrno = 0;
     int n = outputBuffer_.writeFd(fd_, &savedErrno);
@@ -128,7 +161,7 @@ void TcpConnection::handleWrite()
                 shutdown();
         }
     } else {
-        LOG_FATAL("TcpConnection::handleWrite failed");
+        LOG_ERROR("TcpConnection::handleWrite failed, errno: %d", savedErrno);
     }
 }
 
@@ -142,9 +175,16 @@ void TcpConnection::handleClose()
     state_ = kDisConnected;
     channel_.disableAll();
 
+    TcpConnectionPtr guardThis(shared_from_this());
     // callback user specified
-    connectionCallback_(shared_from_this());
+    connectionCallback_(guardThis);
     // callback TcpServer specified
-    // bug
-    closeCallback_(shared_from_this());
+    closeCallback_(guardThis);
+
+    /*
+    * 下面这种不能保证连接活到结束
+    * 假设第一个回调释放了其他所有强引用，又没有外层持有者，那么第一个分号处就可能析构连接
+    * connectionCallback_(shared_from_this());
+    * closeCallback_(shared_from_this());
+    */
 }

@@ -16,6 +16,8 @@ public:
     TcpConnection(EventLoop* loop, int fd, InetAddr peerAddr);
     ~TcpConnection();
     void send(const char* data, size_t len);
+    void sendInLoop(const char* data, size_t len);
+
 
     void setMessageCallback(MessageCallback cb) { messageCallback_ = cb; }
     void setConnectionCallback(ConnectionCallback cb) { connectionCallback_ = cb; }
@@ -24,6 +26,7 @@ public:
     void connectEstablish();
     bool connected() const { return state_ == kConnected; };
     void shutdown();
+    void shutdownInLoop();
 
     EventLoop* getLoop() { return loop_; }
     InetAddr peerAddr() { return peerAddr_; }

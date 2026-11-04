@@ -20,13 +20,14 @@ int createNonblockOrDie()
     return fd;
 }
 
-void bindOrDie(int fd, InetAddr& addr)
+void bindOrDie(int fd, InetAddr &addr)
 {
-    if (::bind(fd, reinterpret_cast<sockaddr*>(addr.addr()), sizeof(sockaddr)) < 0)
+    if (::bind(fd, reinterpret_cast<sockaddr *>(addr.addr()), sizeof(sockaddr)) < 0)
         LOG_FATAL("bindOrDie failed");
 }
 
-Acceptor::Acceptor(EventLoop* loop, InetAddr addr) : fd_(createNonblockOrDie()),
+Acceptor::Acceptor(EventLoop *loop, InetAddr addr) : 
+    fd_(createNonblockOrDie()),
     channel_(loop, fd_)
 {
     setReuseAddr(fd_, true);
@@ -63,7 +64,7 @@ void Acceptor::handleRead(TimeStamp t)
         LOG_FATAL("new connection coming, but accept failed");
     }
     InetAddr addr(peerAddr);
-    LOG_INFO("new connection from %s at %s",addr.toIpPort().c_str(), t.toString().c_str());
+    LOG_INFO("new connection from %s at %s", addr.toIpPort().c_str(), t.toString().c_str());
     if (newConnectionCallback_)
     {
         newConnectionCallback_(clientFd, addr);

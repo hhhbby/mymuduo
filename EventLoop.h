@@ -18,12 +18,15 @@ public:
     ~EventLoop();
     void loop();
     void wakeup();
-    void runInLoop(Functor f);
 
     void updateChannel(Channel* channel);
     void removeChannel(Channel* channel);
-private:
+
+    bool isInLoopThread();
+    void assertInLoopThread();
+    void runInLoop(Functor f);
     void queueInLoop(Functor f);
+private:
     void doPendingFunctors();
     void readWakeupFd();
 

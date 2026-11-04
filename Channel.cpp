@@ -20,6 +20,15 @@ Channel::~Channel()
 
 void Channel::handleEvent(TimeStamp receiveTime)
 {
+    // 从未绑定对象的 Channel 可以直接分发事件；已经绑定且 lock() 成功，就由 guard 持有对象直到分发结束；
+    // 已经绑定但 lock() 失败，就必须跳过分发。
+    std::shared_ptr<void> guard;
+    if (tied_)
+    {
+        guard = tie_.lock();
+        if (!guard)
+            return;
+    }
     handleEventWithGuard(receiveTime);
 }
 

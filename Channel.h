@@ -53,7 +53,7 @@ private:
     int state_;
     
     bool tied_;
-    std::shared_ptr<void> tie_; // weak_ptr   bug
+    std::weak_ptr<void> tie_;
 
     readEventCallback readCallback_;
     eventCallback writeCallback_;

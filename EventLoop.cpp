@@ -1,6 +1,7 @@
 #include <sys/eventfd.h>
 #include <functional>
 #include <unistd.h>
+#include <assert.h>
 
 #include "Poller.h"
 #include "EventLoop.h"
@@ -64,14 +65,6 @@ void EventLoop::wakeup()
     }
 }
 
-void EventLoop::runInLoop(Functor f)
-{
-    if (tid_ == CurrentThread::tid())
-        f();
-    else
-        queueInLoop(f);
-}
-
 void EventLoop::updateChannel(Channel *channel)
 {
     poller_->updateChannel(channel);
@@ -80,6 +73,24 @@ void EventLoop::updateChannel(Channel *channel)
 void EventLoop::removeChannel(Channel *channel)
 {
     poller_->removeChannel(channel);
+}
+
+bool EventLoop::isInLoopThread()
+{
+    return tid_ == CurrentThread::tid();
+}
+
+void EventLoop::assertInLoopThread()
+{
+    assert(isInLoopThread());
+}
+
+void EventLoop::runInLoop(Functor f)
+{
+    if (tid_ == CurrentThread::tid())
+        f();
+    else
+        queueInLoop(f);
 }
 
 void EventLoop::queueInLoop(Functor f)

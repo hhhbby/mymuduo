@@ -1,5 +1,5 @@
 #pragma once
-#include <vector>
+#include <unordered_set>
 
 #include "Acceptor.h"
 #include "EventLoopThreadPool.h"
@@ -21,13 +21,15 @@ public:
     void setCloseCallback(CloseCallback cb) { closeCallback_ = cb; }
     
     void removeConnection(const TcpConnectionPtr& conn);
+    void removeConnectionInLoop(const TcpConnectionPtr& conn);
 private:
     void newConnection(int fd, InetAddr addr);
     EventLoop* loop_;
     Acceptor acceptor_;
     EventLoopThreadPool pool_;
 
-    std::vector<TcpConnectionPtr> conns_;
+    // without mutex, so modify it only in main loop
+    std::unordered_set<TcpConnectionPtr> connections_;
 
     // callbacks from user to TcpConnection
     ConnectionCallback connectionCallback_;
