@@ -57,7 +57,7 @@ void EventLoop::loop()
 void EventLoop::wakeup()
 {
     uint64_t counter = 1;
-    int n = read(wakeupFd_, &counter, sizeof(uint64_t));
+    int n = write(wakeupFd_, &counter, sizeof(uint64_t));
     if (n != sizeof(uint64_t))
     {
         LOG_FATAL("write wakeupFd_ failed");

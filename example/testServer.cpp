@@ -16,6 +16,10 @@ public:
     {
         server.start();
     }
+    void setThreadNumber(int num)
+    {
+        server.setThreadNum(num);
+    }
 private:
     void onConnection(const TcpConnectionPtr& conn)
     {
@@ -41,6 +45,7 @@ int main()
     EventLoop loop;
     InetAddr addr(8000);
     EchoServer server(&loop, addr);
+    server.setThreadNumber(4);
     server.start();
     loop.loop();
 
