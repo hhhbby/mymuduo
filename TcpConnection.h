@@ -26,6 +26,7 @@ public:
     void shutdown();
 
     EventLoop* getLoop() { return loop_; }
+    InetAddr peerAddr() { return peerAddr_; }
 
     // called by ~TcpServer and TcpConnection::handleClose, that is why inner has "if"
     void connectDestroyed();

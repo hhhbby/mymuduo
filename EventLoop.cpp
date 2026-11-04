@@ -44,6 +44,7 @@ void EventLoop::loop()
     {
         activateChannels_.clear();
         TimeStamp pollReturnTime = poller_->poll(kPollTimeMs, &activateChannels_);
+        LOG_INFO("poll return with %lu activate channels", activateChannels_.size());
         for (Channel* channel : activateChannels_)
         {
             channel->handleEvent(pollReturnTime);

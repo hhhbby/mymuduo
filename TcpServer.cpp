@@ -4,13 +4,15 @@
 #include "InetAddr.h"
 #include "TcpConnection.h"
 #include "EventLoop.h"
+#include "Logger.h"
 
 TcpServer::TcpServer(EventLoop* loop, InetAddr addr):
     loop_(loop),
     acceptor_(loop, addr),
-    pool_()
+    pool_(loop)
 {
     acceptor_.setNewConnectionCallback(std::bind(&TcpServer::newConnection, this, std::placeholders::_1, std::placeholders::_2));
+    LOG_INFO("TcpServer ctor");
 }
 
 TcpServer::~TcpServer()

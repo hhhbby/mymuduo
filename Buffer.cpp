@@ -5,7 +5,8 @@
 
 #include "Buffer.h"
 
-Buffer::Buffer() : buffer_(kInitialSize, '0'),
+Buffer::Buffer() : 
+    buffer_(kInitialSize, 0),
     readIdx_(kCheapPrepend),
     writeIdx_(kCheapPrepend)
 {
@@ -51,7 +52,7 @@ void Buffer::retrieve(size_t n)
 void Buffer::append(const char* data, size_t len)
 {
     ensureSpace(len);
-    std::copy(data, data + len, peek() + writeIdx_);
+    std::copy(data, data + len, buffer_.data() + writeIdx_);
     writeIdx_ += len;
 }
 
@@ -60,7 +61,7 @@ ssize_t Buffer::readFd(int fd, int *savedErrno)
 {
     char extrabuf[65536]{};
     iovec vec[2]{};
-    vec[0].iov_base = peek() + writeIdx_;
+    vec[0].iov_base = buffer_.data() + writeIdx_;
     vec[0].iov_len = writableBytes();
     vec[1].iov_base = extrabuf;
     vec[1].iov_len = sizeof extrabuf;
@@ -88,7 +89,7 @@ ssize_t Buffer::writeFd(int fd, int *savedErrno)
     {
         *savedErrno = errno;
     } else {
-        writeIdx_ += n;
+        readIdx_+= n;
     }
     return n;
 }

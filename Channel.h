@@ -21,7 +21,7 @@ public:
     void disableWriting() { events_ &= !kWriteEvent; update(); }
     void disableAll() { events_ = kNoneEvent; update(); }
 
-    bool isWriting() { return events_ | kWriteEvent; }
+    bool isWriting() { return events_ & kWriteEvent; }
     bool isNoneEvent() { return events_ == kNoneEvent; }
 
     void handleEvent(TimeStamp receiveTime);

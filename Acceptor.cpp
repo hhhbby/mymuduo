@@ -5,6 +5,13 @@
 
 #include <unistd.h>
 
+void setReuseAddr(int fd, bool on)
+{
+    int opt = on ? 1 : 0;
+    setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+    // check
+}
+
 int createNonblockOrDie()
 {
     int fd = ::socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0);
@@ -22,6 +29,7 @@ void bindOrDie(int fd, InetAddr& addr)
 Acceptor::Acceptor(EventLoop* loop, InetAddr addr) : fd_(createNonblockOrDie()),
     channel_(loop, fd_)
 {
+    setReuseAddr(fd_, true);
     bindOrDie(fd_, addr);
     channel_.setReadCallback(std::bind(&Acceptor::handleRead, this, std::placeholders::_1));
 }

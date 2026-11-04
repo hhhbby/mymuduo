@@ -6,7 +6,7 @@
 
 class EventLoopThreadPool {
 public:
-    EventLoopThreadPool();
+    EventLoopThreadPool(EventLoop* loop);
     ~EventLoopThreadPool();
     void setThreadNum(int numThreads);
     void start();

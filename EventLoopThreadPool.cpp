@@ -1,8 +1,9 @@
 #include "EventLoopThreadPool.h"
 
 
-EventLoopThreadPool::EventLoopThreadPool()
-    :threads(),
+EventLoopThreadPool::EventLoopThreadPool(EventLoop *loop)
+    :baseLoop_(loop),
+    threads(),
     numThreads_(0),
     next_(0)
 {
