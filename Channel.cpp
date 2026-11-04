@@ -20,7 +20,7 @@ Channel::~Channel()
 
 void Channel::handleEvent(TimeStamp receiveTime)
 {
-
+    handleEventWithGuard(receiveTime);
 }
 
 void Channel::handleEventWithGuard(TimeStamp receiveTime)

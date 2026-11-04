@@ -35,7 +35,7 @@ set_target_properties(mymuduo PROPERTIES
     CXX_EXTENSIONS OFF
 )
 
-target_compile_options(mymuduo PRIVATE -g -Wall)
+target_compile_options(mymuduo PRIVATE -g -Wall -Wextra)
 
 set_target_properties(mymuduo PROPERTIES
     CXX_EXTENSIONS OFF

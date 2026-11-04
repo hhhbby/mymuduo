@@ -14,14 +14,15 @@ public:
 
     char* peek();
     
-    std::string retrieveAllasString(size_t n);
+    std::string retrieveAllasString();
     void retrieve(size_t n);
+    
+    void append(const char* data, size_t len);
+    
+    ssize_t readFd(int fd, int *savedErrno);
+    ssize_t writeFd(int fd, int *savedErrno);
+
     void ensureSpace(size_t n);
-
-    void append(const char* dat, size_t len);
-
-    size_t readFd(int fd, int *savedErrno);
-    size_t writeFd(int fd, int *savedErrno);
 private:
     void makeSpace(size_t n);
     static const size_t kCheapPrepend = 8;

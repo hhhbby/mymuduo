@@ -8,7 +8,7 @@
 int Thread::numCreated_ = 0;
 
 Thread::Thread(ThreadFunc func, const std::string& name):
-    name_(),
+    name_(name),
     func_(std::move(func)),
     tid_(),
     started_(false),

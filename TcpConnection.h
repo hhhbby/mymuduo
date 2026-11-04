@@ -23,12 +23,12 @@ public:
 
     void connectEstablish();
     bool connected() const { return state_ == kConnected; };
-    // void shutdownWrite();
+    void shutdown();
 
     EventLoop* getLoop() { return loop_; }
 
-    // called by ~TcpServer and TcpConnection::handleClose
-    void connectDestroyed();;
+    // called by ~TcpServer and TcpConnection::handleClose, that is why inner has "if"
+    void connectDestroyed();
     
 private:
     void handleRead(TimeStamp receiveTime);
